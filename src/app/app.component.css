@@ -1,0 +1,21 @@
+.header {
+    width: 100%;
+    color: white;
+    height: 100%;
+}
+
+.top-header {
+    background: dodgerblue;
+    padding-left: 10px;
+}
+
+.content {
+    display: flex;
+}
+.content .left-content {
+    width: 20%;
+}
+.content .right-content {
+    width: 80%;
+    padding-left: 20px;
+}

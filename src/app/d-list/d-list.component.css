@@ -1,0 +1,14 @@
+.data_list {
+    padding-left: 5px;
+    padding-top: 5px;
+    border-right: 1px solid lightgray;
+    height: 100vh;
+}
+
+.data_list .data_item {
+    border-bottom: 1px solid lightgray;
+    height: 40px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
