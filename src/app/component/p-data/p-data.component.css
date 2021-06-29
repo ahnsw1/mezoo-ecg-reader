@@ -1,0 +1,10 @@
+.mid-header {
+    display: flex;
+    background: darkblue;
+    justify-content: center;
+    gap: 100px;
+    padding: 30px 0;
+}
+.mid-header .property {
+    font-weight: 600;
+}

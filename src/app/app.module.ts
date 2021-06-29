@@ -3,12 +3,13 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { PDataComponent } from './p-data/p-data.component';
-import { DListComponent } from './d-list/d-list.component';
-import { PeriodComponent } from './period/period.component';
-import { ControllerComponent } from './controller/controller.component';
-import { EcgComponent } from './ecg/ecg.component';
-import { RespirationComponent } from './respiration/respiration.component';
+import { PDataComponent } from './component/p-data/p-data.component';
+import { DListComponent } from './component/d-list/d-list.component';
+import { PeriodComponent } from './component/period/period.component';
+import { ControllerComponent } from './component/controller/controller.component';
+import { EcgComponent } from './component/ecg/ecg.component';
+import { RespirationComponent } from './component/respiration/respiration.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { RespirationComponent } from './respiration/respiration.component';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
