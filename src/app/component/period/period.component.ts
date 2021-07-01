@@ -5,10 +5,6 @@ import * as d3Scale from 'd3-scale';
 import * as d3Array from 'd3-array';
 import * as d3Axis from 'd3-axis';
 import * as d3Shape from 'd3-shape';
-// import { Observable, Timestamp } from 'rxjs';
-// import { JsonpClientBackend } from '@angular/common/http';
-// import { timeStamp } from 'console';
-// import { Timestamp } from 'rxjs/internal/operators/timestamp';
 
 @Component({
   selector: 'app-period',
@@ -57,27 +53,13 @@ export class PeriodComponent implements OnInit, OnChanges {
     
     g.append("g").call(d3Axis.axisBottom(xScale).tickSize(-innerHeight).tickPadding(5))
       .attr("transform", `translate(0, ${innerHeight})`).attr("");
-
-    // g.append("g")
-    //   .attr("class", "grid")
-    //   .attr("transform", `translat(0, 0)`)
-    //   .call(d3.axisBottom(xScale).tickSize(-height));
-
   }
-
-  //data.ts >> 시간
-  //data.patchIndex >> 앞뒤구분
+  
   getUserData(index: number, previousIndex: number){
     this.service.getJson(index).toPromise().then(data => {
 
       let newData: IData[] = [];
       let datas = data.toString().split("\n");
-      // const size = datas.length;
-
-      // for (let i = 0; i < size; i++) {
-      //   newData.push(JSON.parse(datas[i]));
-      // }
-
       
       let l = 0;
       
@@ -103,7 +85,6 @@ export class PeriodComponent implements OnInit, OnChanges {
           this.periodData[l++] = {ts: inputTs, ecg: newData[i].dp.ecg[j]};  
         }
       }
-      // this.render(newData);
       this.getPeriodChart(this.periodData, previousIndex);
     });
   }
@@ -114,7 +95,6 @@ export class PeriodComponent implements OnInit, OnChanges {
   }
   
   getPeriodChart(data: IPeriodData[], previousIndex: number) {
-    // d3.selectAll("svg").remove();
     const existSvg = d3.select(`#svg_${this.currentIndex}`);
 
     if (!existSvg.empty()) {
@@ -134,15 +114,10 @@ export class PeriodComponent implements OnInit, OnChanges {
       .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
 
     //initAxis
-    // const x = d3Scale.scaleTime().domain(d3Array.extent(data, d => new Date(d.ts))).range([0, this.width]).nice();
     const x = d3Scale.scaleTime().range([0, this.width]);
-    // const y = d3Scale.scaleLinear().rangeRound([this.height, 0]);
     const y = d3Scale.scaleLinear().range([this.height, 0]);
-    // x.domain(data.map(d => new Date(d.ts)));
     x.domain(d3Array.extent(data, d => new Date(d.ts)));
-
     y.domain(d3Array.extent(data, d => d.ecg));
-    // y.domain([0, d3Array.max(data, d => d.ecg)]);
 
     //drawAxis
     g.append('g')

@@ -28,6 +28,8 @@ export class AppComponent implements OnInit{
     this.startTime = passedData.startTime;
     this.endTime = passedData.endTime;
   }
+
+  
 }
 
 
