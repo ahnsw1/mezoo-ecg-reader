@@ -1,1 +1,13 @@
-<p>controller works!</p>
+<div class="controller-container">
+    <div class="controller">
+        <i class="fas fa-fast-backward fa-2x" (click) = "fastBackward()"></i>
+        <i class="fas fa-step-backward fa-2x" (click) = "stepBackward()"></i>
+        <i *ngIf="!isPlay" class="fas fa-play-circle fa-2x" (click) = "play()"></i>
+        <i *ngIf="isPlay" class="fas fa-pause-circle fa-2x" (click) = "pause()"></i>
+        <i class="fas fa-step-forward fa-2x" (click) = "stepForward()"></i>
+        <i class="fas fa-fast-forward fa-2x" (click) = "fastForward()"></i>
+    </div>
+    <div class="current_time">
+        07:54:12
+    </div>
+</div>

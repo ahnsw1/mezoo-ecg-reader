@@ -12,3 +12,11 @@
     justify-content: space-around;
     align-items: center;
 }
+
+.clicked {
+    background-color: lightgrey;
+}
+
+.data_item {
+    cursor: pointer;
+}

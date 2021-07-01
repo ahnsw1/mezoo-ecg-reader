@@ -10,6 +10,7 @@ import { ControllerComponent } from './component/controller/controller.component
 import { EcgComponent } from './component/ecg/ecg.component';
 import { RespirationComponent } from './component/respiration/respiration.component';
 import { HttpClientModule } from '@angular/common/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -19,12 +20,13 @@ import { HttpClientModule } from '@angular/common/http';
     PeriodComponent,
     ControllerComponent,
     EcgComponent,
-    RespirationComponent
+    RespirationComponent    
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

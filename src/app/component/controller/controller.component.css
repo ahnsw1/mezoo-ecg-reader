@@ -1,0 +1,22 @@
+.controller-container {
+    height: 30px;
+    display: flex;
+    align-items: center;
+}
+
+
+.controller {
+    display: flex;
+    gap: 10px;
+    margin-right: 20px;
+    margin-left: 20px;
+    align-items: center;
+}
+
+.controller i {
+    cursor: pointer;
+}
+
+.current_time {
+    font-size: 2rem;
+}

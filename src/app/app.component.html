@@ -1,19 +1,23 @@
 <header>
   <link rel="stylesheet" href="https://fonts.xz.style/serve/inter.css">
   <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@exampledev/new.css@1.1.2/new.min.css">  -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css" />
 </header>
 <div class="header">
   <div class="top-header">
     MEZOO ECG Reader
   </div>
-  <app-p-data></app-p-data>
+  <app-p-data [startTime]="startTime" [endTime]="endTime"></app-p-data>
 </div>
 <div class="content">
-  <app-d-list class="left-content"></app-d-list>
+  <app-d-list class="left-content" (indexChanged)="indexChangedHandler($event)"></app-d-list>
   <div class="right-content">
-    <app-period></app-period>
+    <app-period [currentIndex]="currentIndex"></app-period>
+    <hr/>
     <app-controller></app-controller>
+    <hr />
     <app-ecg></app-ecg>
+    <hr />
     <app-respiration></app-respiration>
   </div>
 </div>

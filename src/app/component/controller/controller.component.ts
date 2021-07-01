@@ -12,4 +12,30 @@ export class ControllerComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  isPlay: Boolean = false;
+
+  play(){
+    this.isPlay = true;
+  }
+
+  pause() {
+    this.isPlay = false;
+  }
+
+  fastBackward(){
+    
+  }
+  fastForward (){
+
+  }
+
+  backForward() {
+
+  }
+  stepForward() {
+
+  }
+  stepBackward(){
+
+  }
 }

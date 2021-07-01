@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { ApiService } from 'app/service/api.service';
 
 @Component({
   selector: 'app-p-data',
@@ -7,9 +8,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PDataComponent implements OnInit {
 
-  constructor() { }
+  constructor(private apiService: ApiService) { }
+  @Input() startTime: Date;
+  @Input() endTime: Date;
 
   ngOnInit(): void {
-  }
 
+  }
 }
