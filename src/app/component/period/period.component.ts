@@ -65,7 +65,7 @@ export class PeriodComponent implements OnInit, OnChanges {
     // y.domain([4000, 12000]);
     y.domain(d3Array.extent(data, d => d.ecg));
 
-    //drawAxis
+    //drawAxis!
     g.append('g')
       .attr('class', 'axis axis--x')
       .attr('transform', `translate(0, ${this.height})`)
