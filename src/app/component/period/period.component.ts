@@ -1,10 +1,12 @@
-import { Component, Input, OnChanges, OnInit, Output, SimpleChange, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange, SimpleChanges } from '@angular/core';
 import { ApiService } from 'app/service/api.service';
 import * as d3 from 'd3';
 import * as d3Scale from 'd3-scale';
 import * as d3Array from 'd3-array';
 import * as d3Axis from 'd3-axis';
 import * as d3Shape from 'd3-shape';
+import { IEcgData, TEcgData } from 'app/app.component';
+
 
 @Component({
   selector: 'app-period',
@@ -22,91 +24,34 @@ export class PeriodComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if(changes.currentIndex.previousValue >= 0) {
-      this.getUserData(this.currentIndex, changes.currentIndex.previousValue);
+    if(changes.currentIndex.currentValue !== undefined) {
+      this.getPeriodChart(this.totalEcgData[changes.currentIndex.currentValue], changes.currentIndex.previousValue);
     }
   }
   
   @Input() currentIndex: number;
-  
+  @Input() totalEcgData: TEcgData = {};
+  previousIndex: number;
   width :number;
   height :number;
   margin = {
-      top: 20, right: 60, left: 40, bottom: 20
+    top: 20, right: 60, left: 40, bottom: 20
   };
-  periodData = [];
-  render(data: IData[]) {
-    const height = 140;
-    const width = 1400;
-
-    const svg: any = d3.select("#period-container").append("svg").attr("width", width).attr("height", height);
-
-    const xValue = d => d.ts;
-    const yValue = d => d.ecg;
-
-    const innerWidth = width - this.margin.right - this.margin.left;
-    const innerHeight = height - this.margin.top - this.margin.bottom;
-    const xScale = d3Scale.scaleTime().domain(d3Array.extent(data, xValue)).range([0, innerWidth]).nice();
-    // const yScale = d3Scale.scaleLinear().domain(d3Array.extent(data, yValue[0])).range([0, innerHeight]).nice();
-
-    const g = svg.append("g").attr("transform", `translate(${this.margin.left}, ${this.margin.top})`);
-    
-    g.append("g").call(d3Axis.axisBottom(xScale).tickSize(-innerHeight).tickPadding(5))
-      .attr("transform", `translate(0, ${innerHeight})`).attr("");
-  }
   
-  getUserData(index: number, previousIndex: number){
-    this.service.getJson(index).toPromise().then(data => {
-
-      let newData: IData[] = [];
-      let datas = data.toString().split("\n");
-      
-      let l = 0;
-      
-      for (let i = 0; i < datas.length; i++){
-        newData.push(JSON.parse(datas[i]));
-
-        const ecgSize = newData[i].dp.ecg.length;
-        
-        //1개의 ts에 5개의 ecg가 매핑되어 있어서, 1개의 ts에 1개의 ecg가 매핑되도록
-        for (let j = 0; j < ecgSize; j++) {  
-          let inputTs;
-
-          if (j === 0) {
-            inputTs = newData[i].ts;
-          } else {
-            //마지막 ts와 첫번째 ts를 비교해서, 마지막 ts가 첫번째보다 크면 기록안하기
-            if (j === ecgSize - 1 && this.add8MiliSec(newData[i].ts, j) >= newData[i].ts){
-              continue;
-            }
-            inputTs = this.add8MiliSec(newData[i].ts, j);
-          }
-
-          this.periodData[l++] = {ts: inputTs, ecg: newData[i].dp.ecg[j]};  
-        }
-      }
-      this.getPeriodChart(this.periodData, previousIndex);
-    });
-  }
-
-  private add8MiliSec(ts: number, index: number) {
-    let originTs = new Date(ts);
-    return originTs.setMilliseconds(originTs.getMilliseconds() + 8 * index);
-  }
-  
-  getPeriodChart(data: IPeriodData[], previousIndex: number) {
-    const existSvg = d3.select(`#svg_${this.currentIndex}`);
+  getPeriodChart(data: IEcgData[], previousIndex: number) {
+    const existSvg = d3.select(`#prd_${this.currentIndex}`);
 
     if (!existSvg.empty()) {
-      d3.select(`#svg_${previousIndex}`).attr("display", "none");      
+      d3.select(`#prd_${previousIndex}`).attr("display", "none");      
       existSvg.attr("display", "display");
       return;
     } else {
-      d3.selectAll('svg').attr("display", "none");
+      d3.selectAll('.prd').attr("display", "none");
     }
     //initSvg
     const svg = d3.select('#period-container').append('svg')
-      .attr("id", `svg_${this.currentIndex}`)
+      .attr("id", `prd_${this.currentIndex}`)
+      .attr("class", "prd")
       .attr('width', '100%')
       .attr('height', '100%')
       .attr('viewBox', '0 0 1300 130')
@@ -117,6 +62,7 @@ export class PeriodComponent implements OnInit, OnChanges {
     const x = d3Scale.scaleTime().range([0, this.width]);
     const y = d3Scale.scaleLinear().range([this.height, 0]);
     x.domain(d3Array.extent(data, d => new Date(d.ts)));
+    // y.domain([4000, 12000]);
     y.domain(d3Array.extent(data, d => d.ecg));
 
     //drawAxis
@@ -151,20 +97,4 @@ export class PeriodComponent implements OnInit, OnChanges {
       .attr("stroke-width", ".1px")
       .attr('d', line);
   }
-
-}
-
-export interface IPeriodData {
-  ecg: number;
-  ts: number;
-}
-
-export interface IData {
-  dp: {
-    ecg: Array<number>
-  };
-  ts: number;
-  index: number;
-  patchIndex: string;
-  rssi: number;
 }

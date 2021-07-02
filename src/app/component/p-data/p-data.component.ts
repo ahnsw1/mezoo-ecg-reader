@@ -11,7 +11,7 @@ export class PDataComponent implements OnInit {
   constructor(private apiService: ApiService) { }
   @Input() startTime: Date;
   @Input() endTime: Date;
-
+  
   ngOnInit(): void {
 
   }

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { IData, TData } from 'app/app.component';
 import { ApiService } from 'app/service/api.service';
-import { IData } from '../period/period.component';
 
 @Component({
   selector: 'app-d-list',
@@ -14,13 +14,14 @@ export class DListComponent implements OnInit {
   totalTimes: ITotalTime[] = [];
 
   ngOnInit(): void {
-    this.getTotalTime(4);
+    setTimeout(() => this.getTotalTime(4), 1000);
   }
 
   currentIndex: number;
   startTime: Date;
+  a = {"a": 1}
   endTime: Date;
-
+  @Input() totalData: TData = {};
   @Output() indexChanged: EventEmitter<IPassedData> = new EventEmitter();
 
   clicked(index: number) {
@@ -32,30 +33,19 @@ export class DListComponent implements OnInit {
         this.endTime = this.totalTimes[i].endTime;
       }
     }
-
     this.indexChanged.emit({currentIndex: this.currentIndex, startTime: this.startTime, endTime: this.endTime});
   }
 
-  getTotalTime(total: number){
-    for (let i = 0; i < total; i++){
-      this.apiService.getJson(i).toPromise().then(data => {
-        let size = data.toString().split("\n").length;
-        let convertedData: IData[] = [];
-        let stringArrayData = data.toString().split("\n");
+  getTotalTime(total: number) {
+    for (let i = 0; i < total; i++) {
+      const timeDiff = (this.totalData[i])[(this.totalData[i]).length - 1].ts - (this.totalData[i])[0].ts;
+      const totalHours = Math.floor(timeDiff / 1000 / 60 / 60); 
+      const totalMinutes = Math.floor(timeDiff / 1000 / 60 - totalHours * 60);
+      const totalSeconds = Math.round(timeDiff / 1000 - totalMinutes * 60);
+      const startTime: Date = new Date(this.totalData[i][0].ts);
+      const endTime: Date = new Date(this.totalData[i][this.totalData[i].length - 1].ts);
 
-        for (let i = 0; i < size; i++){
-          convertedData.push(JSON.parse(stringArrayData[i]));
-        }
-
-        const timeDiff = convertedData[convertedData.length - 1].ts - convertedData[0].ts;
-        const totalHours = Math.floor(timeDiff / 1000 / 60 / 60); 
-        const totalMinutes = Math.floor(timeDiff / 1000 / 60 - totalHours * 60);
-        const totalSeconds = Math.round(timeDiff / 1000 - totalMinutes * 60);
-        const startTime: Date = new Date(convertedData[0].ts);
-        const endTime: Date = new Date(convertedData[convertedData.length - 1].ts);
-
-        this.totalTimes.push({index: i, totalHours, totalMinutes, totalSeconds, startTime, endTime})
-      })     
+      this.totalTimes.push({index: i, totalHours, totalMinutes, totalSeconds, startTime, endTime})
     }
   }
 }

@@ -10,13 +10,13 @@
   <app-p-data [startTime]="startTime" [endTime]="endTime"></app-p-data>
 </div>
 <div class="content">
-  <app-d-list class="left-content" (indexChanged)="indexChangedHandler($event)"></app-d-list>
+  <app-d-list class="left-content" (indexChanged)="indexChangedHandler($event)" [totalData]="totalData"></app-d-list>
   <div class="right-content">
-    <app-period [currentIndex]="currentIndex"></app-period>
+    <app-period [currentIndex]="currentIndex" [totalEcgData]="totalEcgData"></app-period>
     <hr/>
     <app-controller></app-controller>
     <hr />
-    <app-ecg></app-ecg>
+    <app-ecg [currentIndex]="currentIndex" [totalEcgData]="totalEcgData"></app-ecg>
     <hr />
     <app-respiration></app-respiration>
   </div>
