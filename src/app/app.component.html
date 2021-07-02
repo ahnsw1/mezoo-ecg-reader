@@ -10,7 +10,7 @@
   <app-p-data [startTime]="startTime" [endTime]="endTime"></app-p-data>
 </div>
 <div class="content">
-  <app-d-list class="left-content" (indexChanged)="indexChangedHandler($event)" [totalData]="totalData"></app-d-list>
+  <app-d-list class="left-content" (indexChanged)="indexChangedHandler($event)" [totalTimeData]="totalTimeData"></app-d-list>
   <div class="right-content">
     <app-period [currentIndex]="currentIndex" [totalEcgData]="totalEcgData"></app-period>
     <hr/>

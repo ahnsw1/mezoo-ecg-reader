@@ -1,7 +1,6 @@
 import { Component, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { ApiService } from './service/api.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import { IPassedData } from './component/d-list/d-list.component';
 
 @Component({
   selector: 'app-root',
@@ -14,10 +13,11 @@ export class AppComponent implements OnInit{
   title = 'mezoo-ecg-reader';
   previousIndex = 0;
   currentIndex;
-  startTime: Date;
-  endTime: Date;
   totalData: TData = {};
   totalEcgData: TEcgData = {};
+  totalTimeData: TTimeData = {};
+  startTime: Date;
+  endTime: Date;
 
   constructor(private apiService: ApiService) {
   }
@@ -26,10 +26,10 @@ export class AppComponent implements OnInit{
     this.getUserData();
   }
 
-  indexChangedHandler(passedData: IPassedData) {
-    this.currentIndex = passedData.currentIndex;
-    this.startTime = passedData.startTime;
-    this.endTime = passedData.endTime;
+  indexChangedHandler(currentIndex: number) {
+    this.currentIndex = currentIndex;
+    this.startTime = this.totalTimeData[this.currentIndex].startTime;
+    this.endTime = this.totalTimeData[this.currentIndex].endTime;
   }
   
   getUserData(){
@@ -61,11 +61,12 @@ export class AppComponent implements OnInit{
               inputTs = this.add8MiliSec(newData[i].ts, j);
             }
   
-            ecgData[l++] = {ts: inputTs, ecg: newData[i].dp.ecg[j]};  
+            ecgData[l++] = {ts: inputTs, ecg: newData[i].dp.ecg[j]};
           }
         }
         this.totalData[index] = newData;
         this.totalEcgData[index] = ecgData;
+        this.totalTimeData[index] = this.getTime(newData);
       });
     }
   }
@@ -73,6 +74,16 @@ export class AppComponent implements OnInit{
   private add8MiliSec(ts: number, index: number) {
     let originTs = new Date(ts);
     return originTs.setMilliseconds(originTs.getMilliseconds() + 8 * index);
+  }
+
+  getTime(data: IData[]): ITimeData {
+      const timeDiff = data[data.length - 1].ts - data[0].ts;
+      const totalHours = Math.floor(timeDiff / 1000 / 60 / 60); 
+      const totalMinutes = Math.floor(timeDiff / 1000 / 60 - totalHours * 60);
+      const totalSeconds = Math.round(timeDiff / 1000 - totalMinutes * 60);
+      const startTime: Date = new Date(data[0].ts);
+      const endTime: Date = new Date(data[data.length - 1].ts);
+      return { totalHours, totalMinutes, totalSeconds, startTime, endTime}
   }
 }
 
@@ -97,4 +108,16 @@ export type TEcgData = {
 
 export type TData = {
   [key: number]: IData[];
+}
+
+export type TTimeData = {
+  [key: number]: ITimeData;
+}
+
+export interface ITimeData {
+  totalHours: number;
+  totalMinutes: number;
+  totalSeconds: number;
+  startTime: Date;
+  endTime: Date;
 }

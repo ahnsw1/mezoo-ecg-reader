@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { ITimeData } from 'app/app.component';
 import { ApiService } from 'app/service/api.service';
 
 @Component({
@@ -13,6 +14,6 @@ export class PDataComponent implements OnInit {
   @Input() endTime: Date;
   
   ngOnInit(): void {
-
+    
   }
 }

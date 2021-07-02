@@ -1,28 +1,8 @@
 <div class="data_list">
-    <!-- <div class="data_item" (click)="clicked(0)" [class.clicked]="currentIndex===0">
-        <div class="no">1</div>
-        <div class="time">12H:12M:12S</div>
-    </div>
-    <div class="data_item" (click)="clicked(1)" [class.clicked]="currentIndex===1">
-        <div class="no">1</div>
-        <div class="time">12H:12M:12S</div>
-    </div>
-    <div class="data_item" (click)="clicked(2)" [class.clicked]="currentIndex===2">
-        <div class="no">1</div>
-        <div class="time">12H:12M:12S</div>
-    </div>
-    <div class="data_item" (click)="clicked(3)" [class.clicked]="currentIndex===3">
-        <div class="no">1</div>
-        <div class="time">12H:12M:12S</div>
-    </div> -->
-    <div *ngFor="let time of totalTimes; index as i" class="data_item" (click)="clicked(time.index)"
-        [class.clicked]="currentIndex===time.index">
+    <div *ngFor="let time of totalTimes; index as i" class="data_item" (click)="clicked(i)" [class.clicked]="currentIndex===i">
         <div class="no">{{i}}</div>
         <div class="time">{{time.totalHours < 10 ? "0" + time.totalHours : time.totalHours}}H:{{time.totalMinutes < 10
                 ? "0" + time.totalMinutes : time.totalMinutes}}M:{{time.totalSeconds < 10 ? "0" + time.totalSeconds :
-                time.totalSeconds}}</div>
-        </div>
-        <!-- <div>
-        {{a}}
-    </div> -->
+                time.totalSeconds}}S</div>
     </div>
+</div>
