@@ -33,11 +33,11 @@ export class EcgComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if(changes.currentIndex.currentValue >= 0) {
-      this.getPeriodChart(this.totalEcgData[this.currentIndex].slice(0, this.totalEcgData[this.currentIndex].length/16), changes.currentIndex.previousValue);
+      this.getEcgChart(this.totalEcgData[this.currentIndex].slice(0, this.totalEcgData[this.currentIndex].length/16), changes.currentIndex.previousValue);
     }
   }
   
-  getPeriodChart(data: IEcgData[], previousIndex: number) {
+  getEcgChart(data: IEcgData[], previousIndex: number) {
     const existSvg = d3.select(`#ecg_${this.currentIndex}`);
 
     if (!existSvg.empty()) {
@@ -53,14 +53,17 @@ export class EcgComponent implements OnInit, OnChanges {
       .attr("class", "ecg")
       .attr('width', '100%')
       .attr('height', '100%')
-      .attr('viewBox', '0 0 1300 130')
+      .attr('viewBox', '0 0 1300 130');
+      
     const g = svg.append('g')
       .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
 
     //initAxis
     const x = d3Scale.scaleTime().range([0, this.width]);
     const y = d3Scale.scaleLinear().range([this.height, 0]);
-    x.domain(d3Array.extent(data, d => new Date(d.ts)));
+    x.domain(d3Array.extent(data, d => {
+      return d.ts;
+    }));
     y.domain(d3Array.extent(data, d => d.ecg));
 
     //drawAxis
@@ -82,7 +85,7 @@ export class EcgComponent implements OnInit, OnChanges {
 
 
     const line: any = d3Shape.line()
-      .x((d: any) => x(new Date(d.ts)))
+      .x((d: any) => x((d.ts)))
       .y((d: any) => y(d.ecg))
       .curve(d3.curveBasis);
 

@@ -61,7 +61,7 @@ export class PeriodComponent implements OnInit, OnChanges {
     //initAxis
     const x = d3Scale.scaleTime().range([0, this.width]);
     const y = d3Scale.scaleLinear().range([this.height, 0]);
-    x.domain(d3Array.extent(data, d => new Date(d.ts)));
+    x.domain(d3Array.extent(data, d => d.ts));
     // y.domain([4000, 12000]);
     y.domain(d3Array.extent(data, d => d.ecg));
 
@@ -84,7 +84,7 @@ export class PeriodComponent implements OnInit, OnChanges {
 
 
     const line: any = d3Shape.line()
-      .x((d: any) => x(new Date(d.ts)))
+      .x((d: any) => x(d.ts))
       .y((d: any) => y(d.ecg))
       .curve(d3.curveBasis);
 

@@ -20,7 +20,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     PeriodComponent,
     ControllerComponent,
     EcgComponent,
-    RespirationComponent    
+    RespirationComponent
   ],
   imports: [
     BrowserModule,
