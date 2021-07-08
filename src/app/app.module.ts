@@ -11,6 +11,7 @@ import { EcgComponent } from './component/ecg/ecg.component';
 import { RespirationComponent } from './component/respiration/respiration.component';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { GraphComponent } from './graph/graph.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     PeriodComponent,
     ControllerComponent,
     EcgComponent,
-    RespirationComponent
+    RespirationComponent,
+    GraphComponent
   ],
   imports: [
     BrowserModule,

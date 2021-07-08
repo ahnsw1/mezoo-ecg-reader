@@ -61,9 +61,7 @@ export class EcgComponent implements OnInit, OnChanges {
     //initAxis
     const x = d3Scale.scaleTime().range([0, this.width]);
     const y = d3Scale.scaleLinear().range([this.height, 0]);
-    x.domain(d3Array.extent(data, d => {
-      return d.ts;
-    }));
+    x.domain(d3Array.extent(data, d => d.ts));
     y.domain(d3Array.extent(data, d => d.ecg));
 
     //drawAxis

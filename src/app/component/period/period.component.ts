@@ -55,6 +55,7 @@ export class PeriodComponent implements OnInit, OnChanges {
       .attr('width', '100%')
       .attr('height', '100%')
       .attr('viewBox', '0 0 1300 130')
+      
     const g = svg.append('g')
       .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
 

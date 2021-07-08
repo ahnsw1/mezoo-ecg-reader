@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-controller',
@@ -12,13 +12,16 @@ export class ControllerComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  isPlay: Boolean = false;
+  @Output() clickButton: EventEmitter<{isPlay: boolean, isStop: boolean}> = new EventEmitter();
+  isPlay: boolean = false;
+  isStop: boolean = !this.isPlay;
 
   play(){
     this.isPlay = true;
+    this.clickButton.emit({isPlay: this.isPlay, isStop: this.isStop});
   }
 
-  pause() {
+  stop() {
     this.isPlay = false;
   }
 
