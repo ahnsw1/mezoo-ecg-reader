@@ -69,7 +69,7 @@ export class ApiService {
 
     return this.http.get<File>(`http://localhost:4200/data/${title}`, { responseType: "text" as "json" }).pipe(
       tap(_ => console.log(`getShortJson(${index}) success`)),
-      catchError(this.handleError<File>('getFullJson'))
+      catchError(this.handleError<File>('getShortJson'))
     )
   }
   private handleError<T>(operation = 'operation', result?: T) {

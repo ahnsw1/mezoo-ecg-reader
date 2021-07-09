@@ -28,3 +28,9 @@
     height: 26px; width: auto; border: 1px solid #ddd; 
     font-size: 13px; line-height: 26px;
 }
+
+#selection {
+    /* z-index: 10; */
+    /* cursor: pointer; */
+}
+

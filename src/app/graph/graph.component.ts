@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { IEcgData, TEcgData } from 'app/app.component';
 import * as d3 from 'd3';
-import { easeLinear, zoom } from 'd3';
+import { easeLinear } from 'd3';
 
 @Component({
   selector: 'app-graph',
@@ -17,15 +17,12 @@ export class GraphComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log(changes);
     if (changes.currentIndex.currentValue !== undefined) {
       this.getPeriodChart(this.totalEcgData[this.currentIndex], changes.currentIndex.previousValue);
-      // this.getEcgChart(this.totalEcgData[this.currentIndex], changes.currentIndex.previousValue);
     }
   }
 
   ngOnInit(): void {
-    console.log(1);
   }
 
   @Input() currentIndex: number;
@@ -36,6 +33,7 @@ export class GraphComponent implements OnInit, OnChanges {
   playButton;
   width: number;
   height: number;
+  brushWidth: number;
   stopButton;
   periodHeight: number;
   margin = {
@@ -60,8 +58,8 @@ export class GraphComponent implements OnInit, OnChanges {
     const svg = d3.select('#period-container').append('svg')
       .attr("id", `prd_${this.currentIndex}`)
       .attr("class", "prd")
-      .attr('width', '100%')
-      .attr('height', '100%')
+      .attr('width', this.width + this.margin.left + this.margin.right)
+      .attr('height', this.height + this.margin.top + this.margin.bottom)
       .attr('viewBox', '0 0 1300 130')
 
     const ecgSvg = d3.select("#ecg-container").append("svg")
@@ -78,13 +76,17 @@ export class GraphComponent implements OnInit, OnChanges {
       .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
 
     //initAxis
-    const xPeriod = d3.scaleTime().range([0, this.width]);
-    const xEcg = d3.scaleTime().range([0, this.width]);
+    const xPeriod = d3.scaleTime().range([0, this.width]).domain(d3.extent(data, d => d.ts));
+    const xEcg = d3.scaleTime().range([0, this.width]).domain(xPeriod.domain());
     const yPeriod = d3.scaleLinear().range([this.periodHeight, 0]);
     const yEcg = d3.scaleLinear().range([this.height, 0]);
 
-    const xPeriodAxis = d3.axisBottom(xPeriod.domain(d3.extent(data, d => d.ts)));
-    const xEcgAxis: any = d3.axisBottom(xEcg.domain(xPeriod.domain()));
+    
+    this.brushWidth = 200;
+    xEcg.domain([0, 150].map(xPeriod.invert, xPeriod))
+
+    const xPeriodAxis = d3.axisBottom(xPeriod);
+    const xEcgAxis: any = d3.axisBottom(xEcg);
     // y.domain([4000, 12000]);
     yPeriod.domain(d3.extent(data, d => d.ecg));
     const yEcgAxis = d3.axisLeft(yEcg.domain(yPeriod.domain()));
@@ -107,11 +109,6 @@ export class GraphComponent implements OnInit, OnChanges {
       .y((d: any) => yPeriod(d.ecg))
       .curve(d3.curveBumpX);
 
-    // const line: any = d3.line()
-    //   .x((d: any) => xPeriod(d.ts))
-    //   .y((d: any) => yPeriod(d.ecg))
-    //   .curve(d3.curveBasis);
-
     const period = g.append("g")
       .attr("class", "period")
       .attr("transform", `translate(${this.margin.left}, ${this.margin.top})`);
@@ -125,10 +122,35 @@ export class GraphComponent implements OnInit, OnChanges {
       .translateExtent([[0, 0], [this.width, this.height]])
       .extent([[0, 0], [this.width, this.height]])
       .on("zoom", zoomed);
-
-    //brush
-    const brush: any = d3.brushX().extent([[0, 0], [this.width, this.periodHeight]]).on("brush end", brushed);
     
+    const brush: any = period
+      .append("rect")
+      .attr("fill", "black")
+      .attr("id", "selection")
+      .attr("fill-opacity", "0.3")
+      .attr("width", this.brushWidth)
+      .attr("height", this.periodHeight)
+      .attr("x", "0")
+      .style("z-index", 10)
+      .style("cursor", "move");
+
+    const selection = document.querySelector(`#prd_${this.currentIndex} #selection`);
+    this.getBrush(selection, this.width);
+
+    const parentX = selection.getBoundingClientRect().left;
+
+    let observer = new MutationObserver(mutations => {
+      if (mutations[0].attributeName === 'x') {
+        var s = [selection.getBoundingClientRect().left - parentX, selection.getBoundingClientRect().right - parentX];
+        xEcg.domain(s.map(xPeriod.invert, xPeriod));
+        ecg.select(".line-path").attr("d", ecgLine);
+        ecg.select(".axis--x").call(xEcgAxis);
+      }
+    })
+
+    let config = { attributes: true, childList: true, characterData: true };
+    observer.observe(selection, config);
+
     //period x축
     period.append("g")
       .attr("class", "axis axis--x")
@@ -153,7 +175,6 @@ export class GraphComponent implements OnInit, OnChanges {
       .attr("fill", "none")
       .attr("clip-path", "url(#clip)")
       .attr("stroke", "blue")
-      // .attr("height", `${this.periodHeight}`)
       .attr("stroke-width", ".1px")
       .attr('d', periodLine);
     
@@ -163,29 +184,16 @@ export class GraphComponent implements OnInit, OnChanges {
       .attr('class', 'line-path')
       .attr("clip-path", "url(#clip)")
       .attr("fill", "none")
+      .attr("width", this.width)
       .attr("stroke", "blue")
       .attr("stroke-width", ".1px")
-      .attr('d', ecgLine);
+      .attr('d', ecgLine);    
     
-      //brush 그리기
-    const brushPath = period.append("g")
-      .attr("class", "brush")
-      .call(brush)
-      .call(brush.move, [0, this.width / 8]);
-
-    // const newBrush = period.append("g")
-    //   .attr("fill", "black")
-    //   .attr("width", "200px")
-    //   .attr("height", this.periodHeight)
-    //   .attr("class", "brush");
-    
-
     //zoom 그리기
     ecgSvg.append("rect")
       .attr("class", "zoom")
       .attr("cursor", "move")
       .attr("fill", "none")
-      // .attr("pointer-events", "all")
       .attr("width", "100%")
       .attr("height", "100%")
       .attr("transform", "translate(20, 0)")
@@ -199,74 +207,73 @@ export class GraphComponent implements OnInit, OnChanges {
     
 
     this.playButton.on("click", () => {
-      
-      brushPath.attr("transform", null)
-        .transition().duration(50000)
-        .ease(easeLinear)
-        .call(brush.move, [this.width - +brushPath.select(".selection").attr("width"), this.width])
+      d3.select("#selection").transition().duration(80000).ease(easeLinear).attr("x", this.width - this.brushWidth);
     });
 
     this.stopButton.on("click", () => {
-      const selection = brushPath.select(".selection")
-      brushPath.call(brush.move, [+selection.attr("x"), +selection.attr("x") + +selection.attr("width")]);
+      d3.select("#selection").transition().duration(0).ease(easeLinear).attr("x", selection.getAttribute("x"));
     })
-
-    //drawAxis!
-    // g.append('g')
-    //   .attr('class', 'axis axis--x')
-    //   .attr('transform', `translate(0, ${this.height})`)
-    //   .call(d3.axisBottom(xPeriod));
-
-    // g.append('g')
-    //   .attr('class', 'axis axis--y')
-    //   .call(d3.axisLeft(yPeriod))
-    //   .append('text')
-    //   .attr('class', 'axis-title')
-    //   .attr('transform', 'rotate(-90)')
-    //   .attr('y', -50)
-    //   .attr('dy', '0.71em')
-    //   .attr('text-anchor', 'middle')
-    //   .text('ECG');
-
-
     
-
-    //drawLineAndPath
-    // const periodPath = g.append('path')
-    //   .datum(data)
-    //   .attr('class', 'line-path')
-    //   .attr("fill", "none")
-    //   .attr("stroke", "blue")
-    //   .attr("stroke-width", ".1px")
-    //   .attr('d', line);
-    
-    // const ecgPath = g.append('path')
-    //   .datum(data)
-    //   .attr('class', 'line-path')
-    //   .attr("fill", "none")
-    //   .attr("stroke", "blue")
-    //   .attr("stroke-width", ".1px")
-    //   .attr('d', line);
-
-    
-
-    function brushed(event) {
-      if (event.type === "zoom") return;
-      const s = event.selection || xPeriod.range();
-
-      xEcg.domain(s.map(xPeriod.invert, xPeriod));
-      ecg.select(".line-path").attr("d", ecgLine);
-      ecg.select(".axis--x").call(xEcgAxis);
-    }
-
     function zoomed(event){
       if (event.type === "brush") return;
       const t = event.transform;
       xEcg.domain(t.rescaleX(xPeriod).domain());
       ecg.select(".line-path").attr("d", ecgLine);
       ecg.select(".axis--x").call(xEcgAxis);
-      // period.select(".brush").call(brush.move, xEcg.range().map(t.invertX, t));
     }
+  }
+
+  getBrush(elmnt, maxWidth) {
+    let b = elmnt.getBoundingClientRect()
+
+    var parentX = b.left;
+
+    if (elmnt.style.left) {
+      elmnt.style.left = "0px";
+    }
+    var pos1 = 0, pos3 = 0;
+
+    elmnt.onmousedown = e => {
+      e = e || window.event;
+      e.preventDefault();
+      pos3 = e.clientX; //처음 눌렀을 때의 마우스 x좌표
+
+      elmnt.onmousemove = (event) => {
+        event = event || window.event;
+        event.preventDefault();
+
+        pos1 = event.clientX - pos3; //이동후 마우스의 x좌표 - 처음 눌렀을 때의 마우스 x좌표
+
+        const elementX = parentX
+        const moveX = pos1; //마우스가 움직인 x좌표
+
+        if (elmnt.getAttribute("x") < 0) {
+          elmnt.setAttribute("x", 0);
+          elmnt.onmousemove = null;
+          return;
+
+        } else if (+elmnt.getAttribute("x") - b.left + b.right > maxWidth) {
+          elmnt.setAttribute("x", maxWidth - (b.right - b.left));
+          elmnt.onmousemove = null;
+          return;
+        }
+
+        elmnt.setAttribute("x", (+elmnt.getAttribute("x") + moveX));
+        pos3 = event.clientX; //움직였을때의 마지막 x좌표
+      }
+
+      elmnt.onmouseup = (event) => {
+        event = event || window.event;
+        event.preventDefault();
+
+        elmnt.onmouseup = null;
+        elmnt.onmousemove = null;
+      };
+
+      // elmnt.onmouseleave = (event) => {
+      //   elmnt.onmousemove = null;
+      // }
+    };
   }
 
   
