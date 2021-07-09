@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/cor
 import { IEcgData, TEcgData, TTotalConvertedData } from 'app/app.component';
 import * as d3 from 'd3';
 import { easeLinear } from 'd3';
-import { TTotalConvertedDatas } from '../app.component';
+import { TTotalConvertedDatas } from '../../app.component';
 
 @Component({
   selector: 'app-graph',
@@ -19,7 +19,7 @@ export class GraphComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.currentIndex.currentValue !== undefined) {
-      this.getPeriodChart(this.totalConvertedData[this.currentIndex], changes.currentIndex.previousValue);
+      // this.getPeriodChart(this.totalConvertedData[this.currentIndex], changes.currentIndex.previousValue);
     }
   }
 
