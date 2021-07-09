@@ -9,7 +9,7 @@ export class Ecg1Component implements OnInit, OnChanges {
 
   constructor() { 
     this.width = 1300 - this.margin.left - this.margin.right;
-    this.height = 130 - this.margin.top - this.margin.bottom;
+    this.height = 230 - this.margin.top - this.margin.bottom;
   }
 
   width: number;
