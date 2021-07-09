@@ -16,10 +16,17 @@ export class AppComponent implements OnInit{
   totalData: TData = {};
   totalEcgData: TEcgData = {};
   totalTimeData: TTimeData = {};
+  totalConvertedData: TTotalConvertedDatas = {};
   startTime: Date;
   endTime: Date;
 
   constructor(private apiService: ApiService) {
+    this.totalConvertedData = {
+        0: { ecg: [], res: [] }
+      , 1: { ecg: [], res: [] }
+      , 2: { ecg: [], res: [] }
+      , 3: { ecg: [], res: [] }
+    }
   }
 
   ngOnInit() {
@@ -37,9 +44,11 @@ export class AppComponent implements OnInit{
       this.apiService.getFullJson(index).toPromise().then(data => {
         
         let newData: IData[] = [];
-        let ecgData: IEcgData[] = []; 
+        let ecgData: IResData[] = []; 
+        // let ecgData: IEcgData[] = []; 
+        let resData: IResData[] = [];
         let datas = data.toString().split("\n");
-        
+
         let l = 0;
         
         for (let i = 0; i < datas.length; i++){
@@ -61,11 +70,16 @@ export class AppComponent implements OnInit{
               inputTs = this.add8MiliSec(newData[i].ts, j);
             }
   
-            ecgData[l++] = {ts: inputTs, ecg: newData[i].dp.ecg[j]};
+            ecgData[l++] = {ts: inputTs, val: newData[i].dp.ecg[j]};
           }
+
+          //호흡신호 데이터 변환
+          resData[i] = {val: newData[i].dp.F1, ts: newData[i].ts}
         }
         this.totalData[index] = newData;
-        this.totalEcgData[index] = ecgData;
+        // this.totalEcgData[index] = ecgData;
+        this.totalConvertedData[index].ecg = ecgData;
+        this.totalConvertedData[index].res = resData;
         this.totalTimeData[index] = this.getTime(newData);
       });
     }
@@ -92,9 +106,15 @@ export interface IEcgData {
   ts: number;
 }
 
+export interface IResData {
+  val: number;
+  ts: number;
+}
+
 export interface IData {
   dp: {
-    ecg: Array<number>
+    ecg: Array<number>,
+    F1: number
   };
   ts: number;
   index: number;
@@ -120,4 +140,13 @@ export interface ITimeData {
   totalSeconds: number;
   startTime: Date;
   endTime: Date;
+}
+
+export type TTotalConvertedDatas = {
+  [key: number]: TTotalConvertedData;
+}
+
+export type TTotalConvertedData = {
+  ecg: IResData[];
+  res: IResData[];
 }
