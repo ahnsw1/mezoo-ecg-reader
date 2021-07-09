@@ -38,6 +38,7 @@ export class ApiService {
     }
 
     return this.http.get<File>(`http://localhost:4200/data/original/${title}`, { responseType: "text" as "json" }).pipe(
+    // return this.http.get<File>(`http://localhost:4200/data/original/${title}`, { responseType: "text" as "json" }).pipe(
       tap(_ => console.log(`getFulleJson(${index}) success`)),
       catchError(this.handleError<File>('getFullJson'))
     )
