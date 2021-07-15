@@ -3,11 +3,11 @@ import * as d3 from 'd3';
 import { TTotalConvertedDatas, IResData } from '../../../app.component';
 
 @Component({
-  selector: 'app-ecg1',
-  templateUrl: './ecg1.component.html',
-  styleUrls: ['./ecg1.component.css']
+  selector: 'app-ecg',
+  templateUrl: './ecg.component.html',
+  styleUrls: ['./ecg.component.css']
 })
-export class Ecg1Component implements OnInit, OnChanges {
+export class EcgComponent implements OnInit, OnChanges {
 
   constructor() { 
     this.width = 1450

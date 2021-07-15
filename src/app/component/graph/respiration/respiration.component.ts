@@ -3,11 +3,11 @@ import * as d3 from 'd3';
 import { IResData } from '../../../app.component';
 
 @Component({
-  selector: 'app-res1',
-  templateUrl: './res1.component.html',
-  styleUrls: ['./res1.component.css']
+  selector: 'app-respiration',
+  templateUrl: './respiration.component.html',
+  styleUrls: ['./respiration.component.css']
 })
-export class Res1Component implements OnInit, OnChanges {
+export class RespirationComponent implements OnInit, OnChanges {
 
   constructor() {
     this.width = 1450

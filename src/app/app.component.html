@@ -12,13 +12,6 @@
 <div class="content">
   <app-d-list class="left-content" (indexChanged)="indexChangedHandler($event)" [totalTimeData]="totalTimeData"></app-d-list>
   <div class="right-content">
-    <!-- <app-period [currentIndex]="currentIndex" [totalEcgData]="totalEcgData"></app-period> -->
-    <!-- <hr/>
-    <app-controller></app-controller>
-    <hr /> -->
-    <!-- <app-ecg [currentIndex]="currentIndex" [totalEcgData]="totalEcgData"></app-ecg> -->
     <app-graph [currentIndex]="currentIndex" [totalConvertedData]="totalConvertedData"></app-graph>
-    <!-- <hr /> -->
-    <!-- <app-respiration></app-respiration> -->
   </div>
 </div>
