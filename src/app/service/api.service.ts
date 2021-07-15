@@ -17,7 +17,7 @@ export class ApiService {
     const dataUrl1 = "60cab53668692b5e18fd60ba.json";
     const dataUrl2 = "60cab54568692b5e18fd6344.json";
     const dataUrl3 = "60d19db168692b5e180a2d9f.json";
-    const dataUrl4 = "608c38c0676a2132d4eda551.json";
+    // const dataUrl4 = "608c38c0676a2132d4eda551.json";
     let title: string;
 
     switch (index) {
@@ -33,9 +33,9 @@ export class ApiService {
       case 3:
         title = dataUrl3;
         break;
-      case 4:
-        title = dataUrl4;
-        break;
+      // case 4:
+      //   title = dataUrl4;
+      //   break;
       default:
         title = dataUrl0;
         break;
@@ -52,7 +52,7 @@ export class ApiService {
     const dataUrl1 = "60cab53668692b5e18fd60ba.json";
     const dataUrl2 = "60cab54568692b5e18fd6344.json";
     const dataUrl3 = "60d19db168692b5e180a2d9f.json";
-    const dataUrl4 = "608c38c0676a2132d4eda551.json";
+    // const dataUrl4 = "608c38c0676a2132d4eda551.json";
     let title: string;
 
     switch (index) {
@@ -68,9 +68,9 @@ export class ApiService {
       case 3:
         title = dataUrl3;
         break;
-      case 4:
-        title = dataUrl4;
-        break;
+      // case 4:
+      //   title = dataUrl4;
+      //   break;
       default:
         title = dataUrl0;
         break;
