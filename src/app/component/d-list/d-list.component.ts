@@ -18,7 +18,7 @@ export class DListComponent implements OnInit{
       for (let i = 0; i < Object.keys(this.totalTimeData).length; i++) {
         this.totalTimes.push(this.totalTimeData[i]);
       }
-    }, 1000);
+    }, 1600);
   }
 
   currentIndex: number;

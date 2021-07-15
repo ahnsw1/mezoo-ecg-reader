@@ -15,9 +15,8 @@ export class ControllerComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
   }
-
   
-
+  @Input() currentTime: number;
   @Output() clickButton: EventEmitter<{isPlay: boolean}> = new EventEmitter();
   @Input() isPlay: boolean = false;
 

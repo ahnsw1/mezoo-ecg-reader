@@ -1,9 +1,10 @@
 <div style="margin-top:10px;">
     <div id="period-container"></div>
     <hr />
-    <app-controller (clickButton)="clickButtonHandler($event)" [isPlay]="isPlay"></app-controller>
+    <app-controller (clickButton)="clickButtonHandler($event)" [isPlay]="isPlay">
+    </app-controller>
     <hr />
-    <app-ecg1 [ecgConvertedData]="ecgConvertedData"></app-ecg1>
+    <app-ecg1 [ecgConvertedData]="ecgConvertedData" [xEcgAddedData]="xEcgAddedData"></app-ecg1>
     <hr />
-    <app-res1 [resConvertedData]="resConvertedData"></app-res1>
+    <app-res1 [resConvertedData]="resConvertedData" [xResAddedData]="xResAddedData"></app-res1>
 </div>

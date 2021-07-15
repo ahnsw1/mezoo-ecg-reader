@@ -10,7 +10,7 @@ import { IResData } from '../../../app.component';
 export class Res1Component implements OnInit, OnChanges {
 
   constructor() {
-    this.width = 1500 - this.margin.right - this.margin.left;
+    this.width = 1450
     this.height = 330;
   }
 
@@ -21,10 +21,17 @@ export class Res1Component implements OnInit, OnChanges {
   };
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.getResChart();
+    if (changes.resConvertedData?.currentValue?.length > 0) {
+      this.getResChart();
+    }
+
+    if (changes.xResAddedData?.currentValue) {
+      this.getResChart();
+    }
   }
 
   @Input() resConvertedData: IResData[] = [];
+  @Input() xResAddedData: IResData;
 
   ngOnInit(): void {
   }
@@ -40,13 +47,11 @@ export class Res1Component implements OnInit, OnChanges {
       .attr("class", "res")
       .attr('width', this.width)
       .attr('height', this.height + this.margin.top + this.margin.bottom)
-      // .attr("transform", `translate(${this.margin.left}, 0)`)
       .attr('viewBox', `0 0 ${this.width} ${this.height}`);
 
-    const resG = resSvg.append('g')
-    // .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
+    const resG = resSvg.append('g');
 
-    const xRes = d3.scaleTime().range([0, this.width]).domain(d3.extent(this.resConvertedData, d => d.ts));
+    const xRes = d3.scaleTime().range([0, this.width - this.margin.left - this.margin.right]).domain(d3.extent(this.resConvertedData, d => d.ts));
     const yRes = d3.scaleLinear().range([this.height, 0]).domain(d3.extent(this.resConvertedData, d => d.val));
 
     const xResAxis = d3.axisBottom(xRes);
@@ -73,18 +78,14 @@ export class Res1Component implements OnInit, OnChanges {
       .call(yResAxis);
 
     //res 그리기
-    // const resPath = 
     res.append('path')
       .datum(this.resConvertedData)
       .attr('class', 'line-path')
-      // .attr("clip-path", "url(#clip)")
       .attr("fill", "none")
       .attr("transform", `translate(${this.margin.left}, ${-this.margin.bottom})`)
-      .attr("width", this.width)
+      .attr("width", this.width - this.margin.left - this.margin.right)
       .attr("stroke", "red")
       .attr("stroke-width", ".2px")
       .attr('d', resLine);
-
   }
-
 }

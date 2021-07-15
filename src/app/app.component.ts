@@ -9,7 +9,7 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
   animations: [
   ]
 })
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit {
   title = 'mezoo-ecg-reader';
   previousIndex = 0;
   currentIndex;
@@ -22,10 +22,11 @@ export class AppComponent implements OnInit{
 
   constructor(private apiService: ApiService) {
     this.totalConvertedData = {
-        0: { ecg: [], res: [] }
+      0: { ecg: [], res: [] }
       , 1: { ecg: [], res: [] }
       , 2: { ecg: [], res: [] }
       , 3: { ecg: [], res: [] }
+      , 4: { ecg: [], res: [] }
     }
   }
 
@@ -38,43 +39,43 @@ export class AppComponent implements OnInit{
     this.startTime = this.totalTimeData[this.currentIndex].startTime;
     this.endTime = this.totalTimeData[this.currentIndex].endTime;
   }
-  
-  getUserData(){
-    for (let index = 0; index < 4; index++){
+
+  getUserData() {
+    for (let index = 0; index < 4; index++) {
       this.apiService.getFullJson(index).toPromise().then(data => {
-        
+
         let newData: IData[] = [];
-        let ecgData: IResData[] = []; 
+        let ecgData: IResData[] = [];
         // let ecgData: IEcgData[] = []; 
         let resData: IResData[] = [];
         let datas = data.toString().split("\n");
 
         let l = 0;
-        
-        for (let i = 0; i < datas.length; i++){
+
+        for (let i = 0; i < datas.length; i++) {
           newData.push(JSON.parse(datas[i]));
 
           const ecgSize = newData[i].dp.ecg.length;
-          
+
           //1개의 ts에 5개의 ecg가 매핑되어 있어서, 1개의 ts에 1개의 ecg가 매핑되도록
-          for (let j = 0; j < ecgSize; j++) {  
+          for (let j = 0; j < ecgSize; j++) {
             let inputTs;
-  
+
             if (j === 0) {
               inputTs = newData[i].ts;
             } else {
               //마지막 ts와 첫번째 ts를 비교해서, 마지막 ts가 첫번째보다 크면 기록안하기
-              if (j === ecgSize - 1 && this.add8MiliSec(newData[i].ts, j) >= newData[i].ts){
+              if (j === ecgSize - 1 && this.add8MiliSec(newData[i].ts, j) >= newData[i].ts) {
                 continue;
               }
               inputTs = this.add8MiliSec(newData[i].ts, j);
             }
-  
-            ecgData[l++] = {ts: inputTs, val: newData[i].dp.ecg[j]};
+
+            ecgData[l++] = { ts: inputTs, val: newData[i].dp.ecg[j] };
           }
 
           //호흡신호 데이터 변환
-          resData[i] = {val: newData[i].dp.F1, ts: newData[i].ts}
+          resData[i] = { val: newData[i].dp.F1, ts: newData[i].ts }
         }
         this.totalData[index] = newData;
         // this.totalEcgData[index] = ecgData;
@@ -91,13 +92,21 @@ export class AppComponent implements OnInit{
   }
 
   getTime(data: IData[]): ITimeData {
-      const timeDiff = data[data.length - 1].ts - data[0].ts;
-      const totalHours = Math.floor(timeDiff / 1000 / 60 / 60); 
-      const totalMinutes = Math.floor(timeDiff / 1000 / 60 - totalHours * 60);
-      const totalSeconds = Math.round(timeDiff / 1000 - totalMinutes * 60);
-      const startTime: Date = new Date(data[0].ts);
-      const endTime: Date = new Date(data[data.length - 1].ts);
-      return { totalHours, totalMinutes, totalSeconds, startTime, endTime}
+    let timeDiff = data[data.length - 1].ts - data[0].ts;
+    // const totalHours = Math.floor(timeDiff / 1000 / 60 / 60);
+    // const totalMinutes = Math.floor(timeDiff / 1000 / 60 - totalHours * 60);
+    // const totalSeconds = Math.round(timeDiff / 1000 - totalMinutes * 60);
+    const totalHours = Math.floor(timeDiff / 1000 / 60 / 60);
+    timeDiff -= totalHours * 60 * 60 * 1000;
+
+    const totalMinutes = Math.floor(timeDiff / 1000 / 60);
+    timeDiff -= totalMinutes * 60 * 1000;
+
+    const totalSeconds = Math.round(timeDiff / 1000);
+    
+    const startTime: Date = new Date(data[0].ts);
+    const endTime: Date = new Date(data[data.length - 1].ts);
+    return { totalHours, totalMinutes, totalSeconds, startTime, endTime }
   }
 }
 
