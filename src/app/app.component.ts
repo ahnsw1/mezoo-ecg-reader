@@ -1,4 +1,4 @@
-import { Component, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { ApiService } from './service/api.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 
@@ -71,14 +71,12 @@ export class AppComponent implements OnInit {
               inputTs = this.add8MiliSec(newData[i].ts, j);
             }
 
-            ecgData[l++] = { ts: inputTs, val: newData[i].dp.ecg[j] };
+            ecgData[l] = { ts: inputTs, val: newData[i].dp.ecg[j] };
+            resData[l] = { ts: inputTs, val: newData[i].dp.F1 };
+            l++;
           }
-
-          //호흡신호 데이터 변환
-          resData[i] = { val: newData[i].dp.F1, ts: newData[i].ts }
         }
         this.totalData[index] = newData;
-        // this.totalEcgData[index] = ecgData;
         this.totalConvertedData[index].ecg = ecgData;
         this.totalConvertedData[index].res = resData;
         this.totalTimeData[index] = this.getTime(newData);
@@ -86,6 +84,7 @@ export class AppComponent implements OnInit {
     }
   }
 
+  //현재 시간 + (8 * index)ms를 반환
   private add8MiliSec(ts: number, index: number) {
     let originTs = new Date(ts);
     return originTs.setMilliseconds(originTs.getMilliseconds() + 8 * index);
@@ -93,9 +92,6 @@ export class AppComponent implements OnInit {
 
   getTime(data: IData[]): ITimeData {
     let timeDiff = data[data.length - 1].ts - data[0].ts;
-    // const totalHours = Math.floor(timeDiff / 1000 / 60 / 60);
-    // const totalMinutes = Math.floor(timeDiff / 1000 / 60 - totalHours * 60);
-    // const totalSeconds = Math.round(timeDiff / 1000 - totalMinutes * 60);
     const totalHours = Math.floor(timeDiff / 1000 / 60 / 60);
     timeDiff -= totalHours * 60 * 60 * 1000;
 

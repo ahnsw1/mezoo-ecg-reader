@@ -4,7 +4,7 @@
     <app-controller (clickButton)="clickButtonHandler($event)" [isPlay]="isPlay" [currentTime]="currentTs">
     </app-controller>
     <hr />
-    <app-ecg [ecgConvertedData]="ecgConvertedData" [xEcgAddedData]="xEcgAddedData"></app-ecg>
+    <app-ecg [ecgConvertedData]="ecgConvertedData" [xEcgAddedData]="xEcgAddedData" [maxEcgYAxisValue]="maxEcgYAxisValue"></app-ecg>
     <hr />
-    <app-respiration [resConvertedData]="resConvertedData" [xResAddedData]="xResAddedData"></app-respiration>
+    <app-respiration [resConvertedData]="resConvertedData" [xResAddedData]="xResAddedData" [maxResYAxisValue]="maxResYAxisValue"></app-respiration>
 </div>
