@@ -205,8 +205,10 @@ export class GraphComponent implements OnInit, OnChanges {
     let observer = new MutationObserver(mutations => {
       if (mutations[0].attributeName === 'x') {
 
-        this.xLeft = selection.getBoundingClientRect().left - document.querySelector(".prd .axis--x").getBoundingClientRect().left + 5;
-        this.xRight = selection.getBoundingClientRect().right - document.querySelector(".prd .axis--x").getBoundingClientRect().left + 5;
+        this.xLeft = selection.getBoundingClientRect().left - document.querySelector(".prd .axis--x").getBoundingClientRect().left
+        //  + 5;
+        this.xRight = selection.getBoundingClientRect().right - document.querySelector(".prd .axis--x").getBoundingClientRect().left
+        //  + 5;
 
         this.xLeftIndex = Math.floor([this.xLeft, this.xRight].map(xPeriod.invert, xPeriod)[0]);
         this.xRightIndex = Math.floor([this.xLeft, this.xRight].map(xPeriod.invert, xPeriod)[1]);

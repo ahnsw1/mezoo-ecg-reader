@@ -50,31 +50,49 @@ export class AppComponent implements OnInit {
         let resData: IResData[] = [];
         let datas = data.toString().split("\n");
 
+        let standardTs = JSON.parse(datas[0]).ts; //기준이 되는 ts
+
         let l = 0;
 
         for (let i = 0; i < datas.length; i++) {
           newData.push(JSON.parse(datas[i]));
 
-          const ecgSize = newData[i].dp.ecg.length;
+          const ecgSize = newData[i].dp.ecg.length ? newData[i].dp.ecg.length : 5;
 
-          //1개의 ts에 5개의 ecg가 매핑되어 있어서, 1개의 ts에 1개의 ecg가 매핑되도록
-          for (let j = 0; j < ecgSize; j++) {
-            let inputTs;
-
-            if (j === 0) {
-              inputTs = newData[i].ts;
-            } else {
-              //마지막 ts와 첫번째 ts를 비교해서, 마지막 ts가 첫번째보다 크면 기록안하기
-              if (j === ecgSize - 1 && this.add8MiliSec(newData[i].ts, j) >= newData[i].ts) {
-                continue;
-              }
-              inputTs = this.add8MiliSec(newData[i].ts, j);
+          // if (newData[i].ts - ecgData[l - 1]?.ts > 108 || newData[i]?.index < newData[i - 1]?.index) {
+          //   newData[i]
+          //   while (true) {
+          //     if () {
+          //       break;
+          //     }
+          //     let j = 1;
+          //     ecgData[l] = { ts: standardTs + 8 * (5 * i + j), val: null }
+          //     resData[l] = { ts: standardTs + 8 * (5 * i + j), val: null }
+          //     j++;
+          //   }
+          // } else {
+            //1개의 ts에 5개의 ecg가 매핑되어 있어서, 1개의 ts에 1개의 ecg가 매핑되도록
+            for (let j = 0; j < ecgSize; j++) {
+              let inputTs = standardTs + 8 * (5 * i + j);
+              let inputEcg = newData[i].dp.ecg[j];
+              let inputRes = newData[i].dp.F1;
+  
+              // if (j === 0) {
+              //   inputTs = newData[i].ts;
+              // } else {
+              //   //마지막 ts와 첫번째 ts를 비교해서, 마지막 ts가 첫번째보다 크면 기록안하기
+              //   if (j === ecgSize - 1 && this.add8MiliSec(newData[i].ts, j) >= newData[i].ts) {
+              //     continue;
+              //   }
+              //   inputTs = this.add8MiliSec(newData[i].ts, j);
+              // }
+  
+              ecgData[l] = { ts: inputTs, val: inputEcg };
+              resData[l] = { ts: inputTs, val: inputRes };
+              l++;
             }
+          // }
 
-            ecgData[l] = { ts: inputTs, val: newData[i].dp.ecg[j] };
-            resData[l] = { ts: inputTs, val: newData[i].dp.F1 };
-            l++;
-          }
         }
         this.totalData[index] = newData;
         this.totalConvertedData[index].ecg = ecgData;

@@ -53,8 +53,8 @@ export class RespirationComponent implements OnInit, OnChanges {
     const resG = resSvg.append('g');
 
     const xRes = d3.scaleTime().range([0, this.width - this.margin.left - this.margin.right]).domain(d3.extent(this.resConvertedData, d => d.ts));
-    const yRes = d3.scaleLinear().range([this.height, 0]).domain([0, this.maxResYAxisValue]);
-    // const yRes = d3.scaleLinear().range([this.height, 0]).domain(d3.extent(this.resConvertedData, d => d.val));
+    // const yRes = d3.scaleLinear().range([this.height, 0]).domain([0, this.maxResYAxisValue]);
+    const yRes = d3.scaleLinear().range([this.height, 0]).domain(d3.extent(this.resConvertedData, d => d.val));
 
     const xResAxis = d3.axisBottom(xRes);
     const yResAxis = d3.axisLeft(yRes);

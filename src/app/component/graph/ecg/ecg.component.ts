@@ -56,8 +56,8 @@ export class EcgComponent implements OnInit, OnChanges {
       .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
 
     const xEcg = d3.scaleTime().range([0, this.width - this.margin.left - this.margin.right]).domain(d3.extent(this.ecgConvertedData, d => d.ts));
-    const yEcg = d3.scaleLinear().range([this.height, 0]).domain([6000, this.maxEcgYAxisValue]);
-    // const yEcg = d3.scaleLinear().range([this.height, 0]).domain(d3.extent(this.ecgConvertedData, d => d.val));
+    // const yEcg = d3.scaleLinear().range([this.height, 0]).domain([6000, this.maxEcgYAxisValue]);
+    const yEcg = d3.scaleLinear().range([this.height, 0]).domain(d3.extent(this.ecgConvertedData, d => d.val));
 
     // const xEcgAxis = d3.axisBottom(xEcg);
     const xEcgAxis = d3.axisBottom(xEcg);
