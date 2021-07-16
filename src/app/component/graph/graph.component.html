@@ -1,7 +1,7 @@
 <div style="margin-top:10px;">
     <div id="period-container"></div>
     <hr />
-    <app-controller (clickButton)="clickButtonHandler($event)" [isPlay]="isPlay">
+    <app-controller (clickButton)="clickButtonHandler($event)" [isPlay]="isPlay" [currentTime]="currentTs">
     </app-controller>
     <hr />
     <app-ecg [ecgConvertedData]="ecgConvertedData" [xEcgAddedData]="xEcgAddedData"></app-ecg>
