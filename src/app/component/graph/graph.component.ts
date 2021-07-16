@@ -216,7 +216,7 @@ export class GraphComponent implements OnInit, OnChanges {
         //   return;
         // }
 
-        // this.currentTs = (this.xLeftTs + this.xRightTs) / 2;
+        this.currentTs = (this.totalConvertedData[this.currentIndex].ecg[this.xLeftIndex].ts + this.totalConvertedData[this.currentIndex].ecg[this.xRightIndex].ts) / 2;
 
         while (true){
           //왼쪽 index 값을 맨 처음 값으로 만들기(이동해서 얻은 왼쪽 index가 ecg배열의 가장 왼쪽 index 보다 작으면 빼지 않기)
