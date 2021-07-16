@@ -1,6 +1,7 @@
 import { Component, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { ApiService } from './service/api.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
+import { TestBed } from '@angular/core/testing';
 
 @Component({
   selector: 'app-root',
@@ -75,7 +76,6 @@ export class AppComponent implements OnInit {
             for (let j = 0; j < ecgSize; j++) {
               let inputTs = standardTs + 8 * (5 * i + j);
               let inputEcg = newData[i].dp.ecg[j];
-              let inputRes = newData[i].dp.F1;
   
               // if (j === 0) {
               //   inputTs = newData[i].ts;
@@ -88,9 +88,11 @@ export class AppComponent implements OnInit {
               // }
   
               ecgData[l] = { ts: inputTs, val: inputEcg };
-              resData[l] = { ts: inputTs, val: inputRes };
               l++;
             }
+
+            resData[i] = { ts: newData[i].ts, val: newData[i].dp.F1}
+
           // }
 
         }
