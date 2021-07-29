@@ -43,7 +43,7 @@ export class EcgComponent implements OnInit, OnChanges {
     if (this.ecgConvertedData.length === 0){
       return;
     }
-    
+
     d3.selectAll("#ecg-container svg").remove();
 
     const ecgSvg = d3.select("#ecg-container").append("svg")
@@ -64,6 +64,7 @@ export class EcgComponent implements OnInit, OnChanges {
     const yEcgAxis = d3.axisLeft(yEcg);
 
     const ecgLine: any = d3.line()
+      .defined((d: any) => !isNaN(d.val))
       .x((d: any) => xEcg(d.ts))
       .y((d: any) => yEcg(d.val))
       .curve(d3.curveBumpX);

@@ -60,6 +60,7 @@ export class RespirationComponent implements OnInit, OnChanges {
     const yResAxis = d3.axisLeft(yRes);
 
     const resLine: any = d3.line()
+      .defined((d: any) => !isNaN(d.val))
       .x((d: any) => xRes(d.ts))
       .y((d: any) => yRes(d.val))
       .curve(d3.curveBumpX);

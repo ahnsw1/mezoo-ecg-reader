@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, OnInit, Output, SimpleChanges, ɵCompiler_
 import { IEcgData, TEcgData, TTotalConvertedData } from 'app/app.component';
 import * as d3 from 'd3';
 import { axisLeft, axisRight, easeLinear, select, selectAll } from 'd3';
-import { TTotalConvertedDatas, IResData } from '../../app.component';
+import { TTotalConvertedDatas, IResData, TTimeData } from '../../app.component';
 
 @Component({
   selector: 'app-graph',
@@ -51,6 +51,8 @@ export class GraphComponent implements OnInit, OnChanges {
   width: number;
   height: number;
   maxEcgYAxisValue;
+  firstTs: number;
+  lastTs: number;
   maxResYAxisValue;
   brushWidth: number;
   margin = {
@@ -96,6 +98,7 @@ export class GraphComponent implements OnInit, OnChanges {
     const xPeriodAxis = d3.axisBottom(xPeriod);
 
     const periodLine: any = d3.line()
+      .defined((d: any) => !isNaN(d.val))
       .x((d: any) => xPeriod(d.ts))
       .y((d: any) => yPeriod(d.val))
       .curve(d3.curveBumpX);
@@ -133,11 +136,20 @@ export class GraphComponent implements OnInit, OnChanges {
       .attr("stroke-width", ".2px")
       .attr('d', periodLine);
 
-    this.brushWidth = 11;
+    this.firstTs = this.totalConvertedData[this.currentIndex].ecg[0].ts;
+    this.lastTs = this.totalConvertedData[this.currentIndex].ecg[this.totalConvertedData[this.currentIndex].ecg.length - 1].ts;
+
+    //브러시를 15초로 설정
+    this.brushWidth = (15000 / (this.lastTs - this.firstTs)) * this.width;
+
+    const drag = d3.drag()
+      .on("drag", (d: any) => { 
+        d3.select("#selection").attr("x", d.x < 0 ? 0 : (d.x > this.width - this.brushWidth ? this.width - this.brushWidth : d.x))
+      });
 
     const brushG = period.append("g")
       .attr("id", "brush")
-      .attr("width", this.brushWidth).attr("x", 0)
+      .attr("width", this.brushWidth).attr("x", "0")
       .attr("transform", `translate(${this.margin.left}, ${-this.margin.bottom})`)
       .attr("height", this.height);
 
@@ -150,7 +162,8 @@ export class GraphComponent implements OnInit, OnChanges {
       .attr("height", this.height)
       .attr("x", "0")
       .style("z-index", 5)
-      .style("cursor", "move");
+      .style("cursor", "move")
+      .call(drag);
 
     const selection = document.getElementById('selection');
 
@@ -189,38 +202,40 @@ export class GraphComponent implements OnInit, OnChanges {
 
     var pos1 = 0, pos3 = 0;
 
-    selection.onmousedown = e => {
-      pos3 = e.clientX; //처음 눌렀을 때의 마우스 x좌표
+    // selection.onmousedown = e => {
+    //   pos3 = e.clientX; //처음 눌렀을 때의 마우스 x좌표
 
-      selection.onmousemove = (event) => {
-        pos1 = event.clientX - pos3; //이동후 마우스의 x좌표 - 처음 눌렀을 때의 마우스 x좌표
+    //   selection.onmousemove = (event) => {
+    //     pos1 = event.clientX - pos3; //이동후 마우스의 x좌표 - 처음 눌렀을 때의 마우스 x좌표
 
-        if (+selection.getAttribute("x") < 0) {
-          selection.setAttribute("x", "0");
-          return;
+    //     if (+selection.getAttribute("x") < 0) {
+    //       selection.setAttribute("x", "0");
+    //       return;
 
-        } else if (+selection.getAttribute("x") - b.left + b.right > this.width) {
-          selection.setAttribute("x", `${this.width - (b.right - b.left)}`);
-          return;
-        }
+    //     } else if (+selection.getAttribute("x") - b.left + b.right > this.width) {
+    //       selection.setAttribute("x", `${this.width - (b.right - b.left)}`);
+    //       return;
+    //     }
 
-        selection.setAttribute("x", `${+selection.getAttribute("x") + pos1}`);
+    //     selection.setAttribute("x", `${+selection.getAttribute("x") + pos1}`);
 
-        pos3 = event.clientX; //움직였을때의 마지막 x좌표
-      }
+    //     pos3 = event.clientX; //움직였을때의 마지막 x좌표
+    //   }
 
-      selection.onmouseup = () => {
-        selection.onmouseup = null;
-        selection.onmousemove = null;
-      };
+    //   selection.onmouseup = () => {
+    //     selection.onmouseup = null;
+    //     selection.onmousemove = null;
+    //   };
 
-      selection.onmouseleave = () => {
-        selection.onmousemove = null;
-      }
-    };
+    //   selection.onmouseout = (event) => {
+    //       selection.onmousemove = null;
+    //   }
+    // };
 
     let observer = new MutationObserver(mutations => {
       if (mutations[0].attributeName === 'x') {
+        //오른쪽으로 드래그 했을 때
+        //왼쪽으로 드래그 했을 때
 
         // this.xLeft = selection.getBoundingClientRect().left - document.querySelector(".prd .axis--x").getBoundingClientRect().left
         //  + 5;
@@ -236,6 +251,8 @@ export class GraphComponent implements OnInit, OnChanges {
         this.xEcgLeftTs = this.totalConvertedData[this.currentIndex].ecg.reduce((prev, curr) => Math.abs(curr.ts - this.xLeftTs) < Math.abs(prev.ts - this.xLeftTs) ? curr : prev).ts;
         this.xEcgRightTs = this.totalConvertedData[this.currentIndex].ecg.reduce((prev, curr) => Math.abs(curr.ts - this.xRightTs) < Math.abs(prev.ts - this.xRightTs) ? curr : prev).ts;
 
+        // this.xEcgLeftIndex = this.totalConvertedData[this.currentIndex].ecg.findIndex(item => item.ts === this.xLeftTs);
+        // this.xEcgRightIndex = this.totalConvertedData[this.currentIndex].ecg.findIndex(item => item.ts === this.xRightTs);
         this.xEcgLeftIndex = this.totalConvertedData[this.currentIndex].ecg.findIndex(item => item.ts === this.xEcgLeftTs);
         this.xEcgRightIndex = this.totalConvertedData[this.currentIndex].ecg.findIndex(item => item.ts === this.xEcgRightTs);
 
@@ -250,19 +267,21 @@ export class GraphComponent implements OnInit, OnChanges {
 
         // this.currentTs = (this.totalConvertedData[this.currentIndex].ecg[this.xLeftIndex].ts + this.totalConvertedData[this.currentIndex].ecg[this.xRightIndex].ts) / 2;
 
-        while (true){
-          //왼쪽 index 값을 맨 처음 값으로 만들기(이동해서 얻은 왼쪽 index가 ecg배열의 가장 왼쪽 index 보다 작으면 빼지 않기)
-          if (this.totalConvertedData[this.currentIndex].ecg[this.xEcgLeftIndex].ts > this.ecgConvertedData[0].ts) {
-            this.ecgConvertedData.shift();
-          } else {
-            break;
-          }
-        }
-        // 이동해서 얻은 index 값을 맨 오른쪽에 더하기(ecg배열의 마지막 값보다 작거나 같으면 더하지 않기)
-        if (this.totalConvertedData[this.currentIndex].ecg[this.xEcgRightIndex].ts > this.ecgConvertedData[this.ecgConvertedData.length - 1].ts) {
-          this.xEcgAddedData = this.totalConvertedData[this.currentIndex].ecg[this.xEcgRightIndex];
-          this.ecgConvertedData.push(this.xEcgAddedData);
-        }
+        // while (true){
+        //   //왼쪽 index 값을 맨 처음 값으로 만들기(이동해서 얻은 왼쪽 index가 ecg배열의 가장 왼쪽 index 보다 작으면 빼지 않기)
+        //   if (this.totalConvertedData[this.currentIndex].ecg[this.xEcgLeftIndex].ts > this.ecgConvertedData[0].ts) {
+        //     this.ecgConvertedData.shift();
+        //   } else {
+        //     break;
+        //   }
+        // }
+        // // 이동해서 얻은 index 값을 맨 오른쪽에 더하기(ecg배열의 마지막 값보다 작거나 같으면 더하지 않기)
+        // if (this.totalConvertedData[this.currentIndex].ecg[this.xEcgRightIndex].ts > this.ecgConvertedData[this.ecgConvertedData.length - 1].ts) {
+        //   this.xEcgAddedData = this.totalConvertedData[this.currentIndex].ecg[this.xEcgRightIndex];
+        //   this.ecgConvertedData.push(this.xEcgAddedData);
+        // }
+        this.xEcgAddedData = this.totalConvertedData[this.currentIndex].ecg[this.xEcgRightIndex];
+        this.ecgConvertedData = this.totalConvertedData[this.currentIndex].ecg.slice(this.xEcgLeftIndex, this.xEcgRightIndex);
 
         this.xResLeftTs = this.totalConvertedData[this.currentIndex].res.reduce((prev, curr) => Math.abs(curr.ts - this.xLeftTs) < Math.abs(prev.ts - this.xLeftTs) ? curr : prev).ts;
         this.xResRightTs = this.totalConvertedData[this.currentIndex].res.reduce((prev, curr) => Math.abs(curr.ts - this.xRightTs) < Math.abs(prev.ts - this.xRightTs) ? curr : prev).ts;
@@ -271,29 +290,27 @@ export class GraphComponent implements OnInit, OnChanges {
         this.xResRightIndex = this.totalConvertedData[this.currentIndex].res.findIndex(item => item.ts === this.xResRightTs);
 
 
-        // this.xEcgAddedData = this.totalConvertedData[this.currentIndex].ecg[this.xRightIndex];
-        // this.ecgConvertedData = this.totalConvertedData[this.currentIndex].ecg.slice(this.xLeftIndex, this.xRightIndex);
 
         // this.ecgConvertedData.shift();
         // this.xEcgAddedData = this.totalConvertedData[this.currentIndex].ecg[this.xRightIndex];
         // this.ecgConvertedData.push(this.xEcgAddedData);
 
-        while (true) {
-          //왼쪽 index 값을 맨 처음 값으로 만들기
-          if (this.totalConvertedData[this.currentIndex].res[this.xResLeftIndex].ts > this.resConvertedData[0].ts) {
-            this.resConvertedData.shift();
-          } else {
-            break;
-          }
-        }
-        // 오른쪽 index 값을 맨 오른쪽에 더하기 (res배열의 마지막 값보다 작거나 같으면 더하지 않기)
-        if (this.totalConvertedData[this.currentIndex].res[this.xResRightIndex].ts > this.resConvertedData[this.resConvertedData.length - 1].ts) {
-          this.xResAddedData = this.totalConvertedData[this.currentIndex].res[this.xResRightIndex];
-          this.resConvertedData.push(this.xResAddedData);
-        }
+        // while (true) {
+        //   //왼쪽 index 값을 맨 처음 값으로 만들기
+        //   if (this.totalConvertedData[this.currentIndex].res[this.xResLeftIndex].ts > this.resConvertedData[0].ts) {
+        //     this.resConvertedData.shift();
+        //   } else {
+        //     break;
+        //   }
+        // }
+        // // 오른쪽 index 값을 맨 오른쪽에 더하기 (res배열의 마지막 값보다 작거나 같으면 더하지 않기)
+        // if (this.totalConvertedData[this.currentIndex].res[this.xResRightIndex].ts > this.resConvertedData[this.resConvertedData.length - 1].ts) {
+        //   this.xResAddedData = this.totalConvertedData[this.currentIndex].res[this.xResRightIndex];
+        //   this.resConvertedData.push(this.xResAddedData);
+        // }
         
-        // this.xResAddedData = this.totalConvertedData[this.currentIndex].res[this.xRightIndex];
-        // this.resConvertedData = this.totalConvertedData[this.currentIndex].res.slice(this.xLeftIndex, this.xRightIndex);
+        this.xResAddedData = this.totalConvertedData[this.currentIndex].res[this.xResRightIndex];
+        this.resConvertedData = this.totalConvertedData[this.currentIndex].res.slice(this.xResLeftIndex, this.xResRightIndex);
         
         // this.xResAddedData = this.totalConvertedData[this.currentIndex].res[this.xRightIndex];
         // this.resConvertedData.shift();
@@ -309,7 +326,10 @@ export class GraphComponent implements OnInit, OnChanges {
 
     if (!d3.select("#selection").empty()) {
       if (event.isPlay) {
-        d3.select("#selection").transition().duration(1400000).ease(easeLinear).attr("x", this.width - this.brushWidth)
+        const speedRate = (this.width - +selection.getAttribute("x")) / this.width;
+        //시작 위치에 따라 도달하는 시간을 다르게 해야 똑같은 속도로 진행한다.
+        d3.select("#selection").transition().duration((this.lastTs - this.firstTs) * speedRate)
+        .ease(easeLinear).attr("x", this.width - this.brushWidth)
       } else {
         d3.select("#selection").transition().duration(0).ease(easeLinear).attr("x", selection.getAttribute("x"));
       }
